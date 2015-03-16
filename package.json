@@ -1,6 +1,6 @@
 {
-  "name": "node-quickstart",
-  "version": "0.0.7",
+  "name": "lib-base",
+  "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:earldouglas/node-quickstart.git"
+    "url": "git@github.com:webinverters/lib-base.git"
   },
   "author": "Justin Mooser",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mooser/node-quickstart/issues"
+    "url": "https://github.com/webinverters/lib-base/issues"
   },
-  "homepage": "https://github.com/mooser/node-quickstart",
+  "homepage": "https://github.com/webinverters/lib-base",
   "devDependencies": {
     "coveralls": "2.11.2",
     "gulp": "^3.8.11",
