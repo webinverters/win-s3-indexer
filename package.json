@@ -1,0 +1,33 @@
+{
+  "name": "node-quickstart",
+  "version": "0.0.7",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "make all",
+    "coverage": "make coverage",
+    "coveralls": "cat ./coverage/lcov.info | coveralls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:earldouglas/node-quickstart.git"
+  },
+  "author": "Justin Mooser",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mooser/node-quickstart/issues"
+  },
+  "homepage": "https://github.com/mooser/node-quickstart",
+  "devDependencies": {
+    "coveralls": "2.11.2",
+    "gulp": "^3.8.11",
+    "gulp-bump": "^0.3.0",
+    "gulp-filter": "^2.0.2",
+    "gulp-git": "^1.1.0",
+    "gulp-jsdoc": "^0.1.4",
+    "gulp-tag-version": "^1.2.1",
+    "istanbul": "0.3.7",
+    "mocha": "2.2.1",
+    "mocha-lcov-reporter": "0.0.2"
+  }
+}
