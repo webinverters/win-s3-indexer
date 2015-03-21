@@ -18,3 +18,4 @@ client/**/*.css
 bower_components
 libs/*
 coverage
+docs

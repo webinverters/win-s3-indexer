@@ -1,2 +1,1 @@
-[![Coverage Status](https://coveralls.io/repos/Mooser/quickstart/badge.svg?branch=master)](https://coveralls.io/r/Mooser/quickstart?branch=master)
-[![Build Status](https://travis-ci.org/Mooser/quickstart.svg?branch=master)](https://travis-ci.org/Mooser/quickstart)
+@module index.js

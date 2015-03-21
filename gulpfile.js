@@ -38,8 +38,14 @@ function inc(importance) {
 
 gulp.task('generate-docs', function() {
   return gulp.src("./src/*.js")
-    .pipe(jsdoc.parser(infos, name))
-    .pipe(gulp.dest('./somewhere'));
+    .pipe(jsdoc.parser({
+      name: 'Default Name Docs',
+      description: 'Default Docs Description',
+      version: require('./package.json').version,
+      licenses: [],
+      plugins: ['plugins/markdown']
+    }, 'jsdoc.json'))
+    .pipe(jsdoc.generator('./docs'));
 });
 
 gulp.task('patch', function() { return inc('patch'); });

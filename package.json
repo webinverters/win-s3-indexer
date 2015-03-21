@@ -20,6 +20,7 @@
   "homepage": "https://github.com/webinverters/lib-base",
   "devDependencies": {
     "coveralls": "2.11.2",
+    "docme": "^0.2.1",
     "gulp": "^3.8.11",
     "gulp-bump": "^0.3.0",
     "gulp-filter": "^2.0.2",
