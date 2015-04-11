@@ -23,17 +23,24 @@
     "chai-as-promised": "^4.1.1",
     "coveralls": "2.11.2",
     "docme": "^0.2.1",
-    "gulp-jsdoc": "^0.1.4",
     "gulp": "^3.8.11",
     "gulp-bump": "^0.3.0",
     "gulp-filter": "^2.0.2",
     "gulp-git": "^1.1.0",
+    "gulp-jsdoc": "^0.1.4",
     "gulp-tag-version": "^1.2.1",
     "istanbul": "0.3.7",
+    "knex": "^0.7.6",
     "mocha": "2.2.1",
     "mocha-lcov-reporter": "0.0.2",
+    "pg": "^4.3.0",
     "sinon": "^1.14.1",
     "sinon-as-promised": "^2.0.3",
-    "sinon-chai": "^2.6.0"
+    "sinon-chai": "^2.6.0",
+    "win-common": "0.0.26"
+  },
+  "dependencies": {
+    "sql-fixtures": "^0.9.0",
+    "win-cloud": "~0.0.8"
   }
 }
