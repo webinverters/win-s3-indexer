@@ -41,7 +41,7 @@ module.exports = function construct(config, dal, Storage) {
         return null;
       })
       .then(function(lastKey) {
-        return bucket.list(null, lastKey)
+        return bucket.list(null, lastKey, 1000)
           .then(function(objects) {
             log('New Object Count From S3:', objects.length);
             return p.map(objects, function(object) {
