@@ -56,15 +56,23 @@ module.exports = function construct(config, dal, Storage) {
           });
       })
       .then(function(blobList) {
-        log("Indexing Blobs:", blobList.length);
-        return dal.insertRows(params.indexName, _.map(blobList, function(blob) {
+        log("Converting Blobs To Indexes:", blobList.length);
+        return p.map(blobList, function(blob) {
           var indexRow = {};
           indexRow.arrivedOn = blob.lastModifiedOn;
           indexRow.key = blob.key;
           return params.parser(blob.key, blob.data, indexRow);
-        }), true)
+        }).then(function(indexRows) {
+          return _.filter(indexRows, function(r) {
+            return r != null;
+          });
+        });
+      })
+      .then(function(indexRows) {
+        log("Indexing:", indexRows.length);
+        return dal.insertRows(params.indexName, indexRows, true)
         .then(function(info) {
-          info.totalRows = blobList.length;
+          info.totalRows = indexRows.length;
           return info;
         });
       });
