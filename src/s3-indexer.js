@@ -25,7 +25,6 @@ module.exports = function construct(config, dal, Storage) {
    * It automatically adds the following properties to index rows:
    * arrivedOn (which is the LastModified data according to S3)
    * key (which is the key to the file on s3)
-   * indexedOn (which is the time that it was indexed by this script.)
    *
    * @notes For internal housekeeping purposes the index requires a "key" and "indexOn" column in the index.
    * @param indexName
@@ -51,7 +50,6 @@ module.exports = function construct(config, dal, Storage) {
                   key: object.Key,
                   data: data,
                   lastModifiedOn: moment(Date.parse(object.LastModified)).unix(),
-                  indexedOn: time.getCurrentTime()
                 };
               });
             });
@@ -60,10 +58,10 @@ module.exports = function construct(config, dal, Storage) {
       .then(function(blobList) {
         log("Indexing Blobs:", blobList.length);
         return dal.insertRows(params.indexName, _.map(blobList, function(blob) {
-          var data = params.parser(blob.key, blob.data);
-          data.arrivedOn = blob.lastModifiedOn;
-          data.indexedOn = blob.indexedOn;
-          return data;
+          var indexRow = {};
+          indexRow.arrivedOn = blob.lastModifiedOn;
+          indexRow.key = blob.key;
+          return params.parser(blob.key, blob.data, indexRow);
         }), true)
         .then(function(info) {
           info.totalRows = blobList.length;

@@ -10,11 +10,8 @@ describe('s3-indexer integration', function () {
   var params = {
     indexName: 'index_blob',
     bucketName: testBucketName,
-    parser: function (key, blob) {
-      return {
-        key: key,
-        indexedOn: time.getCurrentTime()
-      };
+    parser: function (key, blob, row) {
+      return row;
     }
   };
 
