@@ -42,24 +42,23 @@ module.exports = function construct(config, db) {
           // there was likely a duplicate exception, therefore
           // try each row individually as a fallback
           // and report the duplicates.
+          var info={};  // info tracks details about database calls.  rowCount, duplicates, etc...
           return p.map(rows, function(row) {
             return dal.insertRows(tableName, [row])
               .then(function(result) {
-                return result.rowCount;
+                info.rowCount += result.rowCount;
               })
               .catch(function(err) {
                 if (err.message == 'DUPLICATE_READING') {
                   // swallow the error and keep going if it is just a duplicate.
                   log('DUPLICATE:', row);
+                  info.duplicateCount += 1;
                   return 0;
                 }
-
                 else throw err;
               });
           }).then(function(results) {
-            return {rowCount: _.reduce(results, function(a,b) {
-              return a+b;
-            }, 0)}
+            return info;
           })
         });
   };

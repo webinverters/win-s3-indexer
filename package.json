@@ -1,7 +1,7 @@
 {
-  "name": "lib-base",
+  "name": "win-s3-indexer",
   "version": "0.0.1",
-  "description": "",
+  "description": "Indexes files on s3.",
   "main": "index.js",
   "scripts": {
     "test": "make all",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:webinverters/lib-base.git"
+    "url": "git@github.com:webinverters/win-s3-indexer.git"
   },
   "author": "Justin Mooser",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/webinverters/lib-base/issues"
+    "url": "https://github.com/webinverters/win-s3-indexer/issues"
   },
-  "homepage": "https://github.com/webinverters/lib-base",
+  "homepage": "https://github.com/webinverters/win-s3-indexer",
   "devDependencies": {
     "chai": "^1.x.x",
     "chai-as-promised": "^4.1.1",

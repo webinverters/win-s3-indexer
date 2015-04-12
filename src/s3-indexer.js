@@ -17,6 +17,9 @@ module.exports = function construct(config, dal, Storage) {
   config = _.defaults(config, {});
 
   /**
+   * It is import to implement a query method on the provided "dal".  Here is an example
+   * of how it is called by this module:
+   * Ex. dal.query(params.indexName, { limit: 1, sortBy: 'id', sortDirection: 'desc' })
    *
    * @notes For internal housekeeping purposes the index requires a "key" and "indexOn" column in the index.
    * @param indexName
@@ -25,7 +28,7 @@ module.exports = function construct(config, dal, Storage) {
    */
   m.runIndexer = function(params) {
     var bucket = Storage(params.bucketName);
-    return dal.query(params.indexName, { limit: 1, sortBy: 'indexedOn', sortDirection: 'desc' })
+    return dal.query(params.indexName, { limit: 1, sortBy: 'id', sortDirection: 'desc' })
       .then(function(rows) {
         if (rows && rows.length) {
           return rows[0].key;
@@ -33,10 +36,9 @@ module.exports = function construct(config, dal, Storage) {
         return null;
       })
       .then(function(lastKey) {
-        log('LASTKEY', lastKey);
         return bucket.list(null, lastKey)
           .then(function(objects) {
-            log('OBJECT COUNT:', objects.length);
+            log('New Object Count From S3:', objects.length);
             return p.map(objects, function(object) {
               return bucket.readString(object.Key).then(function(data) {
                 return {
@@ -49,7 +51,7 @@ module.exports = function construct(config, dal, Storage) {
           });
       })
       .then(function(blobList) {
-        log("BUCKET", blobList);
+        log("Indexing Blobs:", blobList.length);
         return dal.insertRows(params.indexName, _.map(blobList, function(blob) {
           var data = params.parser(blob.key, blob.data);
           data.lastModifiedOn = blob.lastModifiedOn;

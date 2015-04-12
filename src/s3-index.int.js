@@ -23,20 +23,24 @@ describe('s3-indexer integration', function () {
     return testDatabase.initialize({});
   });
 
-  describe('first time running indexer on bucket:', function () {
-    beforeEach(function () {
-      return wincloud.Storage(testBucketName).writeBlobs([
-        {
-          key: 'blob1',
-          data: 'blob1-data'
-        },
-        {
-          key: 'blob2',
-          data: 'blob2-data'
-        }
-      ]);
-    });
+  beforeEach(function () {
+    return wincloud.Storage(testBucketName).writeBlobs([
+      {
+        key: 'blob1',
+        data: 'blob1-data'
+      },
+      {
+        key: 'blob2',
+        data: 'blob2-data'
+      }
+    ]);
+  });
 
+  afterEach(function() {
+    return wincloud.Storage(testBucketName).emptyBucket();
+  });
+
+  describe('first time running indexer on bucket:', function () {
     it('adds all blobs in bucket to the index', function () {
       return m.runIndexer(params)
         .then(function () {
@@ -44,7 +48,6 @@ describe('s3-indexer integration', function () {
         })
         .then(function (rows) {
           expect(rows.length).to.equal(2);
-            log('DONE MOTHER UCKE')
         });
     });
   });
@@ -57,13 +60,50 @@ describe('s3-indexer integration', function () {
           return m.runIndexer(params)
         })
         .then(function(info) {
+          // we are checking that totalRows is zero
+          // because it shows that nothing was attemtped to
+          // be added to the db.  Which means nothing was download from S3 either.
           expect(info.totalRows).to.equal(0);
-          log('DATA:', data);
         });
       });
     });
     describe('new blobs', function () {
-      it('loops through all the new blobs and adds them to index.');
+      it('loops through all the new blobs and adds them to index.', function() {
+        var newBlobs = [
+          {
+            key: 'blob3',
+            data: 'blob3-data'
+          },
+          {
+            key: 'blob4',
+            data: 'blob4-data'
+          }
+        ];
+        return m.runIndexer(params)
+          .then(function(data) {
+            return wincloud.Storage(testBucketName).writeBlobs(newBlobs);
+          })
+          .then(function() {
+            return m.runIndexer(params)
+          })
+          .then(function(info) {
+            // we are checking that totalRows is zero
+            // because it shows that nothing was attemtped to
+            // be added to the db.  Which means nothing was download from S3 either.
+            expect(info.totalRows).to.equal(2);
+            return dal.query('index_blob');
+          })
+        .then(function(data) {
+          expect(data).to.containSubset([
+            {
+              key: 'blob3'
+            },
+            {
+              key: 'blob4'
+            }
+          ]);
+        })
+      });
     });
   });
 });
