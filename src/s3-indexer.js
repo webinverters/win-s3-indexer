@@ -17,9 +17,15 @@ module.exports = function construct(config, dal, Storage) {
   config = _.defaults(config, {});
 
   /**
+   * @description
    * It is import to implement a query method on the provided "dal".  Here is an example
    * of how it is called by this module:
    * Ex. dal.query(params.indexName, { limit: 1, sortBy: 'id', sortDirection: 'desc' })
+   *
+   * It automatically adds the following properties to index rows:
+   * arrivedOn (which is the LastModified data according to S3)
+   * key (which is the key to the file on s3)
+   * indexedOn (which is the time that it was indexed by this script.)
    *
    * @notes For internal housekeeping purposes the index requires a "key" and "indexOn" column in the index.
    * @param indexName
@@ -44,7 +50,8 @@ module.exports = function construct(config, dal, Storage) {
                 return {
                   key: object.Key,
                   data: data,
-                  lastModifiedOn: moment(Date.parse(object.LastModified)).unix()
+                  lastModifiedOn: moment(Date.parse(object.LastModified)).unix(),
+                  indexedOn: time.getCurrentTime()
                 };
               });
             });
@@ -54,7 +61,8 @@ module.exports = function construct(config, dal, Storage) {
         log("Indexing Blobs:", blobList.length);
         return dal.insertRows(params.indexName, _.map(blobList, function(blob) {
           var data = params.parser(blob.key, blob.data);
-          data.lastModifiedOn = blob.lastModifiedOn;
+          data.arrivedOn = blob.lastModifiedOn;
+          data.indexedOn = blob.indexedOn;
           return data;
         }), true)
         .then(function(info) {
