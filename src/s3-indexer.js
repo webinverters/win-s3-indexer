@@ -33,12 +33,10 @@ module.exports = function construct(config, dal, Storage) {
    */
   m.runIndexer = function(params) {
     var bucket = Storage(params.bucketName);
-    return dal.query(params.indexName, { limit: 1, sortBy: 'id', sortDirection: 'desc' })
-      .then(function(rows) {
-        if (rows && rows.length) {
-          return rows[0].key;
-        }
-        return null;
+      return p.resolve()
+      .then(function() {
+        if (!params.getMarker) return null;
+        return params.getMarker(dal); // return null if there is no last blob to start from.
       })
       .then(function(lastKey) {
         return bucket.list(null, lastKey, 1000)

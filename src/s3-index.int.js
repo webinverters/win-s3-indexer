@@ -10,6 +10,18 @@ describe('s3-indexer integration', function () {
   var params = {
     indexName: 'index_blob',
     bucketName: testBucketName,
+    getMarker:   function(dal) {
+      return dal.query(params.indexName, {
+        limit: 1,
+        sortBy: 'id',
+        sortDirection: 'desc' })
+        .then(function(rows) {
+          if (rows && rows.length) {
+            return rows[0].key;
+          }
+          return null;
+        })
+    },
     parser: function (key, blob, row) {
       return row;
     }
