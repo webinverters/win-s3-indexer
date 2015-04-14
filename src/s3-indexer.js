@@ -44,13 +44,14 @@ module.exports = function construct(config, dal, Storage) {
             log('New Object Count From S3:', objects.length);
             return p.map(objects, function(object) {
               return bucket.readString(object.Key).then(function(data) {
+                debug('Received blob:', data);
                 return {
                   key: object.Key,
                   data: data,
-                  lastModifiedOn: moment(Date.parse(object.LastModified)).unix(),
+                  lastModifiedOn: moment(Date.parse(object.LastModified)).unix()
                 };
               });
-            });
+            }, {concurrency: 1});
           });
       })
       .then(function(blobList) {
@@ -73,7 +74,10 @@ module.exports = function construct(config, dal, Storage) {
           info.totalRows = indexRows.length;
           return info;
         });
-      });
+      })
+      .catch(function(err) {
+        log('Error Attempting to Index Blob:', err);
+      })
   };
 
   return m;
