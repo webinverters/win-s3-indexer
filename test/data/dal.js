@@ -25,6 +25,7 @@ module.exports = function construct(config, db) {
     return db(tableName)
         .insert(rows)
         .catch(function (err) {
+          logError(err);
           if (err.message.indexOf('duplicate') >= 0) {
             if (!ignoreDuplicates) {
               throw error('DUPLICATE_READING');
@@ -82,6 +83,17 @@ module.exports = function construct(config, db) {
       query.limit(params.limit);
     }
 
+    return query;
+  };
+
+
+  m.deleteRows = function(tableName, params) {
+    var query = db(tableName).delete();
+    _.each(params, function(val, key) {
+      if (!_.contains(['limit', 'sortDirection', 'sortBy', 'end', 'start'], key)) {
+        query.where(key, val);
+      }
+    });
     return query;
   };
 

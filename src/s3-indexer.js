@@ -32,6 +32,28 @@ module.exports = function construct(config, dal, Storage) {
    * @param parser The parser must use "key" as the name of the column for the key's name.
    */
   m.runIndexer = function(params) {
+    var insertMarker = function(marker) {
+        if (!marker) return p.resolve();
+        // insert the marker.
+        return dal.insertRows(params.indexName, [{
+          key: marker,
+          arrivedOn: 0
+        }]).then(function() {
+          removeMarker = function() {
+            return dal.deleteRows(params.indexName, {
+              key: marker
+            });
+          };
+        });
+      },
+      removeMarker = function() { return p.resolve() };
+
+    var getLastObject = function(objects) {
+      if (!objects || !objects.length) return null;
+      objects = _.sortBy(objects, 'Key');
+      return objects[objects.length-1].Key;
+    };
+
     var bucket = Storage(params.bucketName);
       return p.resolve()
       .then(function() {
@@ -42,15 +64,21 @@ module.exports = function construct(config, dal, Storage) {
         return bucket.list(null, lastKey, 1000)
           .then(function(objects) {
             log('New Object Count From S3:', objects.length);
-            return p.map(objects, function(object) {
-              return bucket.readString(object.Key).then(function(data) {
-                return {
-                  key: object.Key,
-                  data: data,
-                  lastModifiedOn: moment(Date.parse(object.LastModified)).unix()
-                };
-              });
-            }, {concurrency: 1});
+            var marker = getLastObject(objects);
+            log('Saving Marker:', marker);
+            return insertMarker(marker)
+              .then(function() {
+                log('Processing Blobs...');
+                return p.map(objects, function(object) {
+                  return bucket.readString(object.Key).then(function(data) {
+                    return {
+                      key: object.Key,
+                      data: data,
+                      lastModifiedOn: moment(Date.parse(object.LastModified)).unix()
+                    };
+                  });
+                }, {concurrency: 1});
+              })
           });
       })
       .then(function(blobList) {
@@ -64,6 +92,11 @@ module.exports = function construct(config, dal, Storage) {
           return _.filter(indexRows, function(r) {
             return r != null;
           });
+        });
+      })
+      .then(function(indexRows) {
+        return removeMarker().then(function() {
+          return indexRows;
         });
       })
       .then(function(indexRows) {
