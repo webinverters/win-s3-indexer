@@ -1,6 +1,6 @@
 {
   "name": "win-s3-indexer",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Indexes files on s3.",
   "main": "index.js",
   "scripts": {
