@@ -38,7 +38,7 @@ module.exports = function construct(config, dal, Storage) {
         return dal.insertRows(params.indexName, [{
           key: marker,
           arrivedOn: 0
-        }]).then(function() {
+        }], true).then(function() {
           removeMarker = function() {
             return dal.deleteRows(params.indexName, {
               key: marker
@@ -68,7 +68,7 @@ module.exports = function construct(config, dal, Storage) {
             log('Saving Marker:', marker);
             return insertMarker(marker)
               .then(function() {
-                log('Processing Blobs...');
+                log('Downloading blobs...');
                 return p.map(objects, function(object) {
                   return bucket.readString(object.Key).then(function(data) {
                     return {
