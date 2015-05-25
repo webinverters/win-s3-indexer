@@ -61,7 +61,7 @@ module.exports = function construct(config, dal, Storage) {
         return params.getMarker(dal); // return null if there is no last blob to start from.
       })
       .then(function(lastKey) {
-        log('Start Marker=', marker);
+        log('Start Marker=', lastKey);
         return bucket.list(null, lastKey, 1000)
           .then(function(objects) {
             log('New Object Count From S3:', objects.length);
