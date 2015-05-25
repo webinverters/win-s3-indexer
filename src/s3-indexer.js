@@ -85,7 +85,7 @@ module.exports = function construct(config, dal, Storage) {
         log("Converting Blobs To Indexes:", blobList.length);
         return p.map(blobList, function(blob) {
           var indexRow = {};
-          indexRow.arrivedOn = blob.lastModifiedOn;
+          indexRow.arrivedOn = blob.lastModifiedOn || moment().unix();
           indexRow.key = blob.key;
           return params.parser(blob.key, blob.data, indexRow);
         }).then(function(indexRows) {
