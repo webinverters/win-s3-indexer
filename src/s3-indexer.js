@@ -62,7 +62,7 @@ module.exports = function construct(config, dal, Storage) {
       })
       .then(function(lastKey) {
         log('Start Marker=', lastKey);
-        return bucket.list(null, lastKey, 1000)
+        return bucket.list(null, lastKey, config.BATCH_SIZE || 100)
           .then(function(objects) {
             log('New Object Count From S3:', objects.length);
             var marker = getLastObject(objects);
@@ -86,7 +86,7 @@ module.exports = function construct(config, dal, Storage) {
         log("Converting Blobs To Indexes:", blobList.length);
         return p.map(blobList, function(blob) {
           var indexRow = {};
-          indexRow.arrivedOn = blob.lastModifiedOn || moment().unix();
+          indexRow.arrivedOn = parseInt(blob.lastModifiedOn || moment().unix());
           indexRow.key = blob.key;
           return params.parser(blob.key, blob.data, indexRow);
         }).then(function(indexRows) {
@@ -102,6 +102,7 @@ module.exports = function construct(config, dal, Storage) {
       })
       .then(function(indexRows) {
         log("Indexing:", indexRows.length);
+          console.log(indexRows[0]);
         return dal.insertRows(params.indexName, indexRows, true)
         .then(function(info) {
           info.totalRows = indexRows.length;
